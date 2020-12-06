@@ -20,28 +20,38 @@ namespace SacramentMeetingPlanner.Controllers
         }
 
         // GET: Meetings
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
-            var students = from s in _context.Meetings
+            ViewData["CurrentFilter"] = searchString;
+
+           
+            var meetings = from s in _context.Meetings
                            select s;
+
+             if (!String.IsNullOrEmpty(searchString))
+            {
+                meetings = meetings.Where(s => s.Conductor.Contains(searchString)
+                                       || s.Conductor.Contains(searchString));
+            }
+
             switch (sortOrder)
             {
                 case "name_desc":
-                    students = students.OrderByDescending(s => s.Conductor);
+                    meetings = meetings.OrderByDescending(s => s.Conductor);
                     break;
                 case "Date":
-                    students = students.OrderBy(s => s.MeetingDate);
+                    meetings = meetings.OrderBy(s => s.MeetingDate);
                     break;
                 case "date_desc":
-                    students = students.OrderByDescending(s => s.MeetingDate);
+                    meetings = meetings.OrderByDescending(s => s.MeetingDate);
                     break;
                 default:
-                    students = students.OrderBy(s => s.Conductor);
+                    meetings = meetings.OrderBy(s => s.Conductor);
                     break;
             }
-            return View(await students.AsNoTracking().ToListAsync());
+            return View(await meetings.AsNoTracking().ToListAsync());
         }
 
         // GET: Meetings/Details/5
