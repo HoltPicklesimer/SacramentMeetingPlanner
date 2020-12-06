@@ -20,9 +20,28 @@ namespace SacramentMeetingPlanner.Controllers
         }
 
         // GET: Meetings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            return View(await _context.Meetings.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            var students = from s in _context.Meetings
+                           select s;
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    students = students.OrderByDescending(s => s.Conductor);
+                    break;
+                case "Date":
+                    students = students.OrderBy(s => s.MeetingDate);
+                    break;
+                case "date_desc":
+                    students = students.OrderByDescending(s => s.MeetingDate);
+                    break;
+                default:
+                    students = students.OrderBy(s => s.Conductor);
+                    break;
+            }
+            return View(await students.AsNoTracking().ToListAsync());
         }
 
         // GET: Meetings/Details/5
