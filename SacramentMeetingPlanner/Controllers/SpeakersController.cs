@@ -10,22 +10,23 @@ using SacramentMeetingPlanner.Models;
 
 namespace SacramentMeetingPlanner.Controllers
 {
-    public class MeetingsController : Controller
+    public class SpeakersController : Controller
     {
         private readonly MeetingContext _context;
 
-        public MeetingsController(MeetingContext context)
+        public SpeakersController(MeetingContext context)
         {
             _context = context;
         }
 
-        // GET: Meetings
+        // GET: Speakers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Meetings.ToListAsync());
+            var meetingContext = _context.Speakers.Include(s => s.Meeting);
+            return View(await meetingContext.ToListAsync());
         }
 
-        // GET: Meetings/Details/5
+        // GET: Speakers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,41 +34,42 @@ namespace SacramentMeetingPlanner.Controllers
                 return NotFound();
             }
 
-            var meeting = await _context.Meetings
-                .Include(s => s.Speakers)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.MeetingId == id);
-            if (meeting == null)
+            var speaker = await _context.Speakers
+                .Include(s => s.Meeting)
+                .FirstOrDefaultAsync(m => m.SpeakerId == id);
+            if (speaker == null)
             {
                 return NotFound();
             }
 
-            return View(meeting);
+            return View(speaker);
         }
 
-        // GET: Meetings/Create
+        // GET: Speakers/Create
         public IActionResult Create()
         {
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn");
             return View();
         }
 
-        // POST: Meetings/Create
+        // POST: Speakers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MeetingId,MeetingDate,Conductor,OpeningPrayer,ClosingPrayer,OpeningHymn,SacramentHymn,ClosingHymn,IntermediateHymn")] Meeting meeting)
+        public async Task<IActionResult> Create([Bind("SpeakerId,SpeakerName,Subject,MeetingId")] Speaker speaker)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(meeting);
+                _context.Add(speaker);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(meeting);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            return View(speaker);
         }
 
-        // GET: Meetings/Edit/5
+        // GET: Speakers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +77,23 @@ namespace SacramentMeetingPlanner.Controllers
                 return NotFound();
             }
 
-            var meeting = await _context.Meetings.FindAsync(id);
-            if (meeting == null)
+            var speaker = await _context.Speakers.FindAsync(id);
+            if (speaker == null)
             {
                 return NotFound();
             }
-            return View(meeting);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            return View(speaker);
         }
 
-        // POST: Meetings/Edit/5
+        // POST: Speakers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MeetingId,MeetingDate,Conductor,OpeningPrayer,ClosingPrayer,OpeningHymn,SacramentHymn,ClosingHymn,IntermediateHymn")] Meeting meeting)
+        public async Task<IActionResult> Edit(int id, [Bind("SpeakerId,SpeakerName,Subject,MeetingId")] Speaker speaker)
         {
-            if (id != meeting.MeetingId)
+            if (id != speaker.SpeakerId)
             {
                 return NotFound();
             }
@@ -99,12 +102,12 @@ namespace SacramentMeetingPlanner.Controllers
             {
                 try
                 {
-                    _context.Update(meeting);
+                    _context.Update(speaker);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MeetingExists(meeting.MeetingId))
+                    if (!SpeakerExists(speaker.SpeakerId))
                     {
                         return NotFound();
                     }
@@ -115,10 +118,11 @@ namespace SacramentMeetingPlanner.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(meeting);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            return View(speaker);
         }
 
-        // GET: Meetings/Delete/5
+        // GET: Speakers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,30 +130,31 @@ namespace SacramentMeetingPlanner.Controllers
                 return NotFound();
             }
 
-            var meeting = await _context.Meetings
-                .FirstOrDefaultAsync(m => m.MeetingId == id);
-            if (meeting == null)
+            var speaker = await _context.Speakers
+                .Include(s => s.Meeting)
+                .FirstOrDefaultAsync(m => m.SpeakerId == id);
+            if (speaker == null)
             {
                 return NotFound();
             }
 
-            return View(meeting);
+            return View(speaker);
         }
 
-        // POST: Meetings/Delete/5
+        // POST: Speakers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var meeting = await _context.Meetings.FindAsync(id);
-            _context.Meetings.Remove(meeting);
+            var speaker = await _context.Speakers.FindAsync(id);
+            _context.Speakers.Remove(speaker);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MeetingExists(int id)
+        private bool SpeakerExists(int id)
         {
-            return _context.Meetings.Any(e => e.MeetingId == id);
+            return _context.Speakers.Any(e => e.SpeakerId == id);
         }
     }
 }
