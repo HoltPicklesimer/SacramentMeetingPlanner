@@ -73,3 +73,15 @@ body {
 .home-img {
    width: 80%;
 }
+
+.header {
+   background-image: linear-gradient(white, lightblue);
+}
+
+.footer {
+   background-image: linear-gradient(lightblue, white);
+}
+
+* {
+   font-family: 'Gentium Book Basic', serif;
+}
