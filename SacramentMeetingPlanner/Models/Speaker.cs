@@ -6,21 +6,25 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SacramentMeetingPlanner.Models
 {
-   public class Speaker
-   {
-      public int SpeakerId { get; set; }
+    public class Speaker
+    {
+        public int SpeakerId { get; set; }
 
-      [StringLength(100)]
-      [Display(Name = "Speaker")]
-      public string SpeakerName { get; set; }
+        [Required]
+        [StringLength(100)]
+        [Display(Name = "Speaker")]
+        public string SpeakerName { get; set; }
 
-      [StringLength(100)]
-      [Display(Name = "Subject")]
-      public string Subject { get; set; }
+        [Required]
+        [StringLength(100)]
+        [Display(Name = "Subject")]
+        public string Subject { get; set; }
 
-      public int MeetingId { get; set; }
+        [Required]
+        [Display(Name = "Meeting ID")]
+        public int MeetingId { get; set; }
 
-      // Navigation Properties
-      public Meeting Meeting { get; set; }
-   }
+        // Navigation Properties
+        public Meeting Meeting { get; set; }
+    }
 }

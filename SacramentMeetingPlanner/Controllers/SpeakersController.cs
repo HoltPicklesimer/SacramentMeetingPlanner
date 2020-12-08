@@ -20,10 +20,31 @@ namespace SacramentMeetingPlanner.Controllers
         }
 
         // GET: Speakers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
-            var meetingContext = _context.Speakers.Include(s => s.Meeting);
-            return View(await meetingContext.ToListAsync());
+            ViewData["NameSort"] = sortOrder == "name_desc" ? "Name" : "name_desc";
+            ViewData["MeetingSort"] = sortOrder == "meeting_desc" ? "Meeting" : "meeting_desc";
+
+            var speakers = from s in _context.Speakers
+                           select s;
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    speakers = speakers.OrderByDescending(s => s.SpeakerName);
+                    break;
+                case "Date":
+                    speakers = speakers.OrderBy(s => s.MeetingId);
+                    break;
+                case "date_desc":
+                    speakers = speakers.OrderByDescending(s => s.MeetingId);
+                    break;
+                default:
+                case "Name":
+                    speakers = speakers.OrderBy(s => s.SpeakerName);
+                    break;
+            }
+            return View(await speakers.AsNoTracking().ToListAsync());
         }
 
         // GET: Speakers/Details/5
@@ -48,7 +69,7 @@ namespace SacramentMeetingPlanner.Controllers
         // GET: Speakers/Create
         public IActionResult Create()
         {
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn");
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "MeetingId");
             return View();
         }
 
@@ -65,7 +86,7 @@ namespace SacramentMeetingPlanner.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "MeetingId", speaker.MeetingId);
             return View(speaker);
         }
 
@@ -82,7 +103,7 @@ namespace SacramentMeetingPlanner.Controllers
             {
                 return NotFound();
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "MeetingId", speaker.MeetingId);
             return View(speaker);
         }
 
@@ -118,7 +139,7 @@ namespace SacramentMeetingPlanner.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "ClosingHymn", speaker.MeetingId);
+            ViewData["MeetingId"] = new SelectList(_context.Meetings, "MeetingId", "MeetingId", speaker.MeetingId);
             return View(speaker);
         }
 

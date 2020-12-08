@@ -1,32 +1,32 @@
 ﻿@model SacramentMeetingPlanner.Models.Speaker
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Speaker Details";
 }
 
-<h1>Details</h1>
+<h1>Speaker Details</h1>
 
 <div>
     <h4>Speaker</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MeetingId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Meeting.MeetingId)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.SpeakerName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.SpeakerName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Subject)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Subject)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Meeting)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Meeting.ClosingHymn)
         </dd>
     </dl>
 </div>

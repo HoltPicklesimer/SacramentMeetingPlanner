@@ -22,15 +22,15 @@ namespace SacramentMeetingPlanner.Controllers
         // GET: Meetings
         public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["NameSortParm"] = sortOrder == "name_desc" ? "Name" : "name_desc";
             ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
             ViewData["CurrentFilter"] = searchString;
 
-           
+
             var meetings = from s in _context.Meetings
                            select s;
 
-             if (!String.IsNullOrEmpty(searchString))
+            if (!String.IsNullOrEmpty(searchString))
             {
                 meetings = meetings.Where(s => s.Conductor.Contains(searchString)
                                        || s.Conductor.Contains(searchString));
@@ -48,6 +48,7 @@ namespace SacramentMeetingPlanner.Controllers
                     meetings = meetings.OrderByDescending(s => s.MeetingDate);
                     break;
                 default:
+                case "Name":
                     meetings = meetings.OrderBy(s => s.Conductor);
                     break;
             }
@@ -156,6 +157,8 @@ namespace SacramentMeetingPlanner.Controllers
             }
 
             var meeting = await _context.Meetings
+                .Include(s => s.Speakers)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.MeetingId == id);
             if (meeting == null)
             {

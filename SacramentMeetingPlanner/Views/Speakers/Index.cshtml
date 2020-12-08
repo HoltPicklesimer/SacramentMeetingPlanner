@@ -1,25 +1,25 @@
 ﻿@model IEnumerable<SacramentMeetingPlanner.Models.Speaker>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Speakers";
 }
 
-<h1>Index</h1>
+<h1>Speakers</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Add a Speaker</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SpeakerName)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]">@Html.DisplayNameFor(model => model.SpeakerName)</a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Subject)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Meeting)
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]">@Html.DisplayNameFor(model => model.MeetingId)</a>
             </th>
             <th></th>
         </tr>
@@ -34,7 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Subject)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Meeting.ClosingHymn)
+                @Html.DisplayFor(modelItem => item.MeetingId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.SpeakerId">Edit</a> |
